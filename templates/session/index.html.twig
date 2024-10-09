@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} nombre de visites!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1> Bonjour c'est votre visite Numéro {{ app.session.get('nbreVisite') }}! </h1>
+
+    La session en 3 étapes:
+    <ol>
+        <li> Définir une session <code>$session = $request->getSession();</code></li>
+        <li> <b>get()</b>: Calculer le nombre de visites <code>$nbreVisite = $session->get('nbreVisite') + 1;</code></li>
+        <li> <b>set()</b>: Mettre à jour la variable session <code>$session->set('nbreVisite', $nbreVisite);</code></li>
+        <li> Afficher <code> &#123;&#123; app.session.get('nbreVisite') 	&#125;&#125; ✅</code></li>
+    </ol>
+</div>
+{% endblock %}
