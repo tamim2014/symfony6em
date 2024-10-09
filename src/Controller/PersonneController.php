@@ -11,20 +11,23 @@ use App\Entity\Personne;
 #[Route('/personne')]
 class PersonneController extends AbstractController
 {
+   // 1) Affiche toutes les personnes: findAll()
     #[Route('/', name: 'personne.list')]
     public function index(ManagerRegistry $doctrine):response {
-       $repository = $doctrine->getRepository(Personne::class); 
+       $repository = $doctrine->getRepository(Personne::class);
+
        $personnes = $repository->findAll();
 
        return $this->render('personne/index.html.twig', [
-        'personnes' => $personnes
+        'personnes' => $personnes,
+        'isPaginated' => false
        ]);
     }
-
+    
+    // 2) Pagination: findBy([], [], $nbreDePages, offset:débutDePlage)
     #[Route('/alls/{page?1}/{nbre?12}', name: 'personne.list.alls')]
     public function indexAlls(ManagerRegistry $doctrine, $page, $nbre):response {
        $repository = $doctrine->getRepository(Personne::class);
-       
        $nbPersonne = $repository->count([]);
        //$nbrePage = $nbPersonne/$nbre; // $nbre c le nbre de personnes par page
        $nbrePage = ceil($nbPersonne/$nbre); 
@@ -40,7 +43,7 @@ class PersonneController extends AbstractController
         'nbre' => $nbre
        ]);
     }
-
+   // 3) Détail(Affiche une seule personne): find($id)
     #[Route('/{id}', name: 'personne.detail')]
     public function detail(ManagerRegistry $doctrine, $id):response {
        $repository = $doctrine->getRepository(Personne::class); 
@@ -54,34 +57,45 @@ class PersonneController extends AbstractController
        ]);
     }
 
+    // 4) Ajouter une personne: persist($personne)
     #[Route('/add', name: 'personne.add')]
     public function addPersonne(ManagerRegistry $doctrine): Response
     {
        // $this->getDoctrine() : sf <= 5
        $entityManager = $doctrine->getManager();
        $personne = new Personne();
-      // $personne2 = new Personne();
-
        $personne->setNom('Ali');
        $personne->setPrenom('Baba');
        $personne->setAge('91');
 
-       
-      
-       //$personne2->setNom('Toto');
-       //$personne2->setPrenom('Tata');
-       //$personne2->setAge('21');
-
-  
        // INSERTION objet
        $entityManager->persist($personne);
-      // $entityManager->persist($personne2);
        // INSERTION sql(migration objet vers sql)
        $entityManager->flush();
         return $this->render('personne/detail.html.twig', [
-            'personne' => $personne,
-            //'personne2' => $personne2
-           
+            'personne' => $personne  
         ]);
     }
+
+   // 5) Supprimer une personne( usage du param converter): remove($personne)
+   #[Route('/delete/{id}', name: 'personne.delete')]
+   public function deletePersonne(Personne $personne=null,  ManagerRegistry $doctrine): Response
+   {
+      // Recuperer la personne
+         // si elle existe: la supprimer
+         // si elle n'existe pas: message d'erreur
+      if($personne){
+         $manager = $doctrine->getManager();
+         //SUPPRESSION Objet
+         $manager->remove($personne);
+         // SUPPRESSION Sql(migration objet vers sql)
+         $manager->flush();
+
+         $this->addFlash('success', 'La personne est bien supprimée');
+
+      }else{
+         $this->addFlash('error', 'Personne inexistante');
+      }
+      return $this->redirectToRoute('personne.list.alls');
+   }
 }
