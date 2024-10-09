@@ -90,12 +90,30 @@ class PersonneController extends AbstractController
          $manager->remove($personne);
          // SUPPRESSION Sql(migration objet vers sql)
          $manager->flush();
-
          $this->addFlash('success', 'La personne est bien supprimée');
-
       }else{
          $this->addFlash('error', 'Personne inexistante');
       }
       return $this->redirectToRoute('personne.list.alls');
    }
+   // 6) Modifier  une personne( usage du param converter): persist($personne)
+   // si l'id existe => update sinon => add  
+      #[Route('/update/{id}/{prenom}/{nom}/{age}', name: 'personne.update')]
+      public function updatePersonne(Personne $personne=null, ManagerRegistry $doctrine, $prenom, $nom, $age):Response{
+         if($personne){
+             $personne->setPrenom($prenom);
+             $personne->setNom($nom);
+             $personne->setAge($age);
+             $manager = $doctrine->getManager();
+             //MODIFICATION Objet
+            $manager->persist($personne);
+            // MODIFICATION Sql(migration objet vers sql)
+            $manager->flush();
+
+            $this->addFlash('success', 'La personne $personne est modifiée');
+         }else{
+            $this->addFlash('error', 'Personne inexistante');
+         }
+         return $this->redirectToRoute('personne.list.alls');
+      }
 }
