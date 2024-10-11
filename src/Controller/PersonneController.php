@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Personne;
+use App\Form\PersonneType;
+
 #[Route('/personne')]
 class PersonneController extends AbstractController
 {
@@ -43,6 +45,34 @@ class PersonneController extends AbstractController
         'nbre' => $nbre
        ]);
     }
+
+   // 4) Ajouter une personne: persist($personne)
+   #[Route('/add', name: 'personne.add')]
+   public function addPersonne(ManagerRegistry $doctrine): Response
+   {
+      // $this->getDoctrine() : sf <= 5
+      $entityManager = $doctrine->getManager();
+      $personne = new Personne();
+      /*
+      $personne->setNom('Ali');
+      $personne->setPrenom('Baba');
+      $personne->setAge('91');
+      */
+    
+      // INSERTION objet
+      //$entityManager->persist($personne);
+      // INSERTION sql(migration objet vers sql)
+      //$entityManager->flush();
+
+      $form = $this->createForm(PersonneType::class, $personne );
+      return $this->render('personne/add-personne.html.twig', [
+            //'personne' => $personne  
+            'form' => $form->createView()  
+      ]);
+   }
+
+
+
    // 3) Détail(Affiche une seule personne): find($id)
     #[Route('/{id}', name: 'personne.detail')]
     public function detail(ManagerRegistry $doctrine, $id):response {
@@ -57,25 +87,7 @@ class PersonneController extends AbstractController
        ]);
     }
 
-    // 4) Ajouter une personne: persist($personne)
-    #[Route('/add', name: 'personne.add')]
-    public function addPersonne(ManagerRegistry $doctrine): Response
-    {
-       // $this->getDoctrine() : sf <= 5
-       $entityManager = $doctrine->getManager();
-       $personne = new Personne();
-       $personne->setNom('Ali');
-       $personne->setPrenom('Baba');
-       $personne->setAge('91');
 
-       // INSERTION objet
-       $entityManager->persist($personne);
-       // INSERTION sql(migration objet vers sql)
-       $entityManager->flush();
-        return $this->render('personne/detail.html.twig', [
-            'personne' => $personne  
-        ]);
-    }
 
    // 5) Supprimer une personne( usage du param converter): remove($personne)
    #[Route('/delete/{id}', name: 'personne.delete')]
