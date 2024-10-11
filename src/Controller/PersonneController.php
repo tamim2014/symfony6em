@@ -129,4 +129,19 @@ class PersonneController extends AbstractController
         'isPaginated' => false
        ]);
     }
+
+       // 8) Affiche la moyene d'age et le nombre de personne entre 30 et 40 ans: statPersonnesByAgeInterval($ageMin, $ageMax)
+       #[Route('/stat/age/{ageMin}/{ageMax}', name: 'personne.list.stat')]
+       public function statPersonnesByAge(ManagerRegistry $doctrine, $ageMin, $ageMax):response {
+          $repository = $doctrine->getRepository(Personne::class);
+   
+          $stats = $repository->statPersonnesByAgeInterval($ageMin, $ageMax);
+                                
+          return $this->render('personne/stats.html.twig', [
+           'stats' => $stats[0],
+           //'isPaginated' => false
+           'ageMin' => $ageMin,
+           'ageMax' => $ageMax
+          ]);
+       }
 }

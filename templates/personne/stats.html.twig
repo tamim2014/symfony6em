@@ -1,0 +1,30 @@
+{% extends 'template.html.twig' %}
+
+{% block title %}Moyenne d'âge{% endblock %}
+
+{% block body %}
+<style>
+    .card:hover {  background: #ececea !important; }  
+</style>
+<link rel="stylesheet" href="{{ asset('node_modules/bootstrap/dist/css/bootstrap.css')}}">
+
+
+<div class="card  bg-primary text-white mb-3" >
+  <div class="card-body">
+    <h5 class="card-title"> Moyenne d'âge des personnes entre {{ ageMin }} ans et {{ ageMax }} ans </h5>
+    <hr>
+    <h6 class="card-subtitle mb-2 text-muted">{{stats['ageMoyen']}}</h6>
+
+  </div>
+</div>
+
+<div class="card bg-warning text-white mb-3" >
+  <div class="card-body">
+    <h5 class="card-title"> Nombre de personnes entre {{ ageMin }} ans et {{ ageMax }} ans</h5>
+    <hr>
+    <h6 class="card-subtitle mb-2 text-muted">{{stats['nombrePersonne']}}</h6>
+ 
+  </div>
+</div>
+
+{% endblock %}
