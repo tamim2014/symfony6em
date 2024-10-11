@@ -116,4 +116,17 @@ class PersonneController extends AbstractController
          }
          return $this->redirectToRoute('personne.list.alls');
       }
+
+   // 7) Affiche les personnes entre 30 et 40 ans: finPersonnesByAgeInterval($ageMin, $ageMax)
+    #[Route('/alls/age/{ageMin}/{ageMax}', name: 'personne.list.plagedage')]
+    public function personnesByAge(ManagerRegistry $doctrine, $ageMin, $ageMax):response {
+       $repository = $doctrine->getRepository(Personne::class);
+
+       $personnes = $repository->findPersonnesByAgeInterval($ageMin, $ageMax);
+
+       return $this->render('personne/index.html.twig', [
+        'personnes' => $personnes,
+        'isPaginated' => false
+       ]);
+    }
 }
