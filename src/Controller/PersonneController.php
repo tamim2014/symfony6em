@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Personne;
@@ -48,23 +49,21 @@ class PersonneController extends AbstractController
 
    // 4) Ajouter une personne: persist($personne)
    #[Route('/add', name: 'personne.add')]
-   public function addPersonne(ManagerRegistry $doctrine): Response
+   public function addPersonne(ManagerRegistry $doctrine, Request $request): Response
    {
       // $this->getDoctrine() : sf <= 5
       $entityManager = $doctrine->getManager();
       $personne = new Personne();
-      /*
-      $personne->setNom('Ali');
-      $personne->setPrenom('Baba');
-      $personne->setAge('91');
-      */
-    
-      // INSERTION objet
-      //$entityManager->persist($personne);
-      // INSERTION sql(migration objet vers sql)
-      //$entityManager->flush();
-
       $form = $this->createForm(PersonneType::class, $personne );
+      // Traitement
+      $form->handleRequest($request);
+      if($form->isSubmitted()){
+         $manager = $doctrine->getManager();
+         $manager->persist($personne);
+         $manager->flush();
+        // $this->addFlash($personne->nom."est ajouté dans la table Personne de la base sf6");
+         // return $this->redirectToRoute('/');
+      }
       return $this->render('personne/add-personne.html.twig', [
             //'personne' => $personne  
             'form' => $form->createView()  
@@ -79,7 +78,7 @@ class PersonneController extends AbstractController
        $repository = $doctrine->getRepository(Personne::class); 
        $personne = $repository->find($id);
        if(!$personne){
-          $this->addFlash('error', "La personne d'id $id n'existe pas");
+          $this->addFlash('error', 'La personne d id $id n existe pas');
           return $this->redirectToRoute('personne.list');
        }
        return $this->render('personne/detail.html.twig', [
@@ -144,16 +143,16 @@ class PersonneController extends AbstractController
 
        // 8) Affiche la moyene d'age et le nombre de personne entre 30 et 40 ans: statPersonnesByAgeInterval($ageMin, $ageMax)
        #[Route('/stat/age/{ageMin}/{ageMax}', name: 'personne.list.stat')]
-       public function statPersonnesByAge(ManagerRegistry $doctrine, $ageMin, $ageMax):response {
+       public function statPersonnesByAge(ManagerRegistry $doctrine, $ageMin, $ageMax):response
+        {
           $repository = $doctrine->getRepository(Personne::class);
    
           $stats = $repository->statPersonnesByAgeInterval($ageMin, $ageMax);
                                 
           return $this->render('personne/stats.html.twig', [
            'stats' => $stats[0],
-           //'isPaginated' => false
            'ageMin' => $ageMin,
            'ageMax' => $ageMax
           ]);
-       }
+         }
 }
