@@ -48,12 +48,15 @@ class PersonneController extends AbstractController
     }
 
    // 4) Ajouter une personne: persist($personne)
-   #[Route('/add', name: 'personne.add')]
-   public function addPersonne(ManagerRegistry $doctrine, Request $request): Response
+   #[Route('/edit/{id?0}', name: 'personne.edit')]
+   public function addPersonne(Personne $personne=null, ManagerRegistry $doctrine, Request $request): Response
    {
-      // $this->getDoctrine() : sf <= 5
+      $new = false;
+      if(!$personne){
+         $new = true;
+         $personne = new Personne();
+      }
       $entityManager = $doctrine->getManager();
-      $personne = new Personne();
       $form = $this->createForm(PersonneType::class, $personne );
       // Traitement
       $form->handleRequest($request);
@@ -61,8 +64,13 @@ class PersonneController extends AbstractController
          $manager = $doctrine->getManager();
          $manager->persist($personne);
          $manager->flush();
-        // $this->addFlash($personne->nom."est ajouté dans la table Personne de la base sf6");
-         // return $this->redirectToRoute('/');
+     
+         if($new){
+             $message = " est ajouté avec succès";
+         }else{
+            $message = " est mise à jour avec succès";
+         }
+         $this->addFlash('success', $personne->getNom().$message);  
       }
       return $this->render('personne/add-personne.html.twig', [
             //'personne' => $personne  
