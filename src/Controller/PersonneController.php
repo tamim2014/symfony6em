@@ -4,12 +4,16 @@ namespace App\Controller;
 
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Personne;
 use App\Form\PersonneType;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[Route('/personne')]
 class PersonneController extends AbstractController
@@ -49,8 +53,8 @@ class PersonneController extends AbstractController
 
    // 4) Ajouter une personne: persist($personne)
    #[Route('/edit/{id?0}', name: 'personne.edit')]
-   public function addPersonne(Personne $personne=null, ManagerRegistry $doctrine, Request $request): Response
-   {
+   public function addPersonne(Personne $personne=null, ManagerRegistry $doctrine, Request $request, SluggerInterface $slugger): Response
+   { 
       $new = false;
       if(!$personne){
          $new = true;
@@ -61,6 +65,26 @@ class PersonneController extends AbstractController
       // Traitement
       $form->handleRequest($request);
       if($form->isSubmitted()){
+         /** @var UploadedFile $brochureFile */
+         $brochureFile = $form->get('photo')->getData();
+         if ($brochureFile) {
+            $originalFilename = pathinfo($brochureFile->getClientOriginalName(), PATHINFO_FILENAME);
+            // this is needed to safely include the file name as part of the URL
+            $safeFilename = $slugger->slug($originalFilename);
+            $newFilename = $safeFilename.'-'.uniqid().'.'.$brochureFile->guessExtension();
+            // Move the file to the directory where brochures are stored
+            try {
+               $brochureFile->move(
+                  //$brochuresDirectory,
+                   $this->getParameter('personne_directory'),
+                   $newFilename
+               );
+            } catch (FileException $e) {
+               // ... handle exception if something happens during file upload
+            }
+            $personne->setImage($newFilename);
+
+
          $manager = $doctrine->getManager();
          $manager->persist($personne);
          $manager->flush();
@@ -72,11 +96,13 @@ class PersonneController extends AbstractController
          }
          $this->addFlash('success', $personne->getNom().$message);  
       }
-      return $this->render('personne/add-personne.html.twig', [
-            //'personne' => $personne  
-            'form' => $form->createView()  
-      ]);
+
    }
+   return $this->render('personne/add-personne.html.twig', [
+      //'personne' => $personne  
+      'form' => $form->createView()  
+   ]);
+}
 
 
 

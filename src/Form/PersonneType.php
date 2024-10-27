@@ -7,6 +7,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 
 
 class PersonneType extends AbstractType
@@ -17,6 +19,25 @@ class PersonneType extends AbstractType
             ->add('nom')
             ->add('age')
             ->add('prenom')
+
+            ->add('photo', FileType::class, [
+                'label' => 'Votre image de profile (fichier image seulement)',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '100024k',
+                        'mimeTypes' => [
+                            'image/png',
+                            'image/gif',
+                            'image/jpeg',
+                            'image/jpg',
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid image',
+                    ])
+                ],
+            ])
+
             ->add('editer', SubmitType::class)
         ;
     }
