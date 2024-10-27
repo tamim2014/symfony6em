@@ -7,7 +7,7 @@
     .card:hover {  background: #ececea !important; }  
 </style>
 <link rel="stylesheet" href="{{ asset('node_modules/bootstrap/dist/css/bootstrap.css')}}">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <div class="row">
         {% for personne in personnes %}
           <div class="card" style="width: 18rem;">
@@ -15,9 +15,9 @@
               <h5 class="card-title"> {{personne.prenom}}</h5>
               <h6 class="card-subtitle mb-2 text-muted">{{personne.nom}} {{personne.prenom}}</h6>
               <p class="card-text">Age: {{personne.age}} ans</p>
-              <a href="{{ path('personne.detail', {id:personne.id}) }}" class="card-link">Détails</a>
-              <a href="{{ path('personne.delete', {id:personne.id}) }}" class="card-link">Delete</a>
-              <a href="{{ path('personne.edit', {id:personne.id}) }}" class="card-link">Edit</a>
+              <a href="{{ path('personne.detail', {id:personne.id}) }}" class="card-link"><i class="fa fa-search"></i></a>
+              <a href="{{ path('personne.delete', {id:personne.id}) }}" class="card-link"><i class="fa fa-trash"></i></a>
+              <a href="{{ path('personne.edit', {id:personne.id}) }}" class="card-link"><i class="fa fa-edit"></i></a>
             </div>
           </div>
         {% endfor %} 
