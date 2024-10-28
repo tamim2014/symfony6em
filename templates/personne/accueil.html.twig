@@ -4,19 +4,42 @@
 
 {% block body %}
 <style>
+  	.idS{
+			border:1px solid #8c8b8b; 
+			padding:1px 4px; 
+			border-radius:3px;
+			box-shadow:2px 2px 0.5px 0.5px #8c8b8b; 
+		}
+    .idS {padding-top:auto; padding-bottom:.17em;  padding-left:.5em ; padding-right:.5em;}
     
 </style>
 <link rel="stylesheet" href="{{ asset('node_modules/bootstrap/dist/css/bootstrap.css')}}">
 
 
-<ol>
-  <li>Affiche toutes les personnes: <b>findAll()</b></li>
-  <li>Détail(Affiche une seule personne):<b> find($id)</b></li>
-  <li>Pagination: <b>findBy([], [], $nbreDePages, offset:débutDePlage)</b></li>
-  <li>Affiche les personnes entre 30 et 40 ans:<b> finPersonnesByAgeInterval($ageMin, $ageMax)</b></li>
-  <li>Affiche la moyene d'age et le nombre de personne entre 30 et 40 ans:<b> statPersonnesByAgeInterval($ageMin, $ageMax)</b></li>
+<ol style="line-height:3em;">
+  <li>Affiche toutes les personnes: <br><b class="idS">findAll()</b></li>
+  <li>Détail(Affiche une seule personne):<br><b class="idS"> find($id)</b></li>
+  <li>Pagination: <br><b class="idS">findBy([], [], $nbreDePages, offset:débutDePlage)</b></li>
+  <li>
+      Affiche les personnes entre 30 et 40 ans:<br><b class="idS"> finPersonnesByAgeInterval($ageMin, $ageMax)</b></li><br>
+      <code style="line-height:0 !important; color:black;">
+      
+      </code>
+  <li>
+       Affiche la moyene d'age et le nombre de personne entre 30 et 40 ans:<br><b class="idS"> statPersonnesByAgeInterval($ageMin, $ageMax)</b>
+       <code style="line-height:0 !important; color:black;"><br>
+        public function statPersonnesByAgeInterval($ageMin, $ageMax): array
+        {<br> 
+            &emsp;&emsp;&emsp;&emsp;$qb = $this->createQueryBuilder('p')
+            ->select('avg(p.age) as ageMoyen, count(p.id) as nombrePersonne');<br>
+    
+            &emsp;&emsp;&emsp;&emsp;$this->addIntervalAge($qb, $ageMin, $ageMax);<br>
+            &emsp;&emsp;&emsp;&emsp;return   $qb->getQuery()->getScalarResult();<br>
+        }
+       </code>
+  </li>
 
-  <li>Supprimer une personne : <b> remove($personne) </b></li>   
+  <li>Supprimer une personne :<br> <b class="idS"> remove($personne) </b></li>   
 </ol>
 
 
