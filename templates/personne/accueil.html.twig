@@ -1,0 +1,24 @@
+{% extends 'template.html.twig' %}
+
+{% block title %} Le select dans twig{% endblock %}
+
+{% block body %}
+<style>
+    
+</style>
+<link rel="stylesheet" href="{{ asset('node_modules/bootstrap/dist/css/bootstrap.css')}}">
+
+
+<ol>
+  <li>Affiche toutes les personnes: <b>findAll()</b></li>
+  <li>Détail(Affiche une seule personne):<b> find($id)</b></li>
+  <li>Pagination: <b>findBy([], [], $nbreDePages, offset:débutDePlage)</b></li>
+  <li>Affiche les personnes entre 30 et 40 ans:<b> finPersonnesByAgeInterval($ageMin, $ageMax)</b></li>
+  <li>Affiche la moyene d'age et le nombre de personne entre 30 et 40 ans:<b> statPersonnesByAgeInterval($ageMin, $ageMax)</b></li>
+
+  <li>Supprimer une personne : <b> remove($personne) </b></li>   
+</ol>
+
+
+
+{% endblock %}

@@ -18,6 +18,11 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 #[Route('/personne')]
 class PersonneController extends AbstractController
 {
+   #[Route('/accueil', name:'personne.accueil')]
+   public function accueil(){
+      return $this->render('personne/accueil.html.twig');
+   }
+
    // 1) Affiche toutes les personnes: findAll()
     #[Route('/', name: 'personne.list')]
     public function index(ManagerRegistry $doctrine):response {
@@ -65,16 +70,16 @@ class PersonneController extends AbstractController
       // Traitement
       $form->handleRequest($request);
       if($form->isSubmitted()){
-         /** @var UploadedFile $brochureFile */
-         $brochureFile = $form->get('photo')->getData();
-         if ($brochureFile) {
-            $originalFilename = pathinfo($brochureFile->getClientOriginalName(), PATHINFO_FILENAME);
+         /** @var UploadedFile $photo */
+         $photo = $form->get('photo')->getData();
+         if ($photo) {
+            $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
             // this is needed to safely include the file name as part of the URL
             $safeFilename = $slugger->slug($originalFilename);
-            $newFilename = $safeFilename.'-'.uniqid().'.'.$brochureFile->guessExtension();
+            $newFilename = $safeFilename.'-'.uniqid().'.'.$photo->guessExtension();
             // Move the file to the directory where brochures are stored
             try {
-               $brochureFile->move(
+               $photo->move(
                   //$brochuresDirectory,
                    $this->getParameter('personne_directory'),
                    $newFilename
@@ -189,4 +194,6 @@ class PersonneController extends AbstractController
            'ageMax' => $ageMax
           ]);
          }
+
+
 }
